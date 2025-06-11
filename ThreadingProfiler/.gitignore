@@ -1,0 +1,29 @@
+# Build directory
+/build/
+/CMakeFiles/
+/Makefile
+/CMakeCache.txt
+/cmake_install.cmake
+/compile_commands.json
+
+# Output files
+*.so
+*.a
+*.o
+*.obj
+*.exe
+*.out
+*.log
+
+# IDE-specific files
+*.swp
+*.DS_Store
+*.vscode/
+*.idea/
+
+# Test binaries
+/test_threads
+*.dSYM/
+
+# Logs
+logs/
