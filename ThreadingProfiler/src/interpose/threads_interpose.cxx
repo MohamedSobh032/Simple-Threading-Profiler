@@ -2,6 +2,8 @@
 #define _GNU_SOURCE
 #endif
 
+#include "../../include/logging/Logger.hxx"
+
 #include <pthread.h>
 #include <dlfcn.h>
 #include <stdio.h>
@@ -19,8 +21,12 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
     if (!real_pthread_create)
         real_pthread_create = (int (*)(pthread_t *, const pthread_attr_t *, void *(*)(void *), void *))dlsym(RTLD_NEXT, "pthread_create");
 
-    // Log thread creation timestamp, thread ID (after join), etc.
-    fprintf(stderr, "[Profiler] Thread is being created at time %ld\n", time(NULL));
+    LogMessage msg{
+        .type = LogType::THREAD_CREATE,
+        .severity = LogSeverity::INFO,
+        .time = std::chrono::system_clock::now(),
+        .data = ThreadInfo{pthread_self()}};
+    Logger::get_instance()->log(msg);
 
     struct ThreadArgs
     {
