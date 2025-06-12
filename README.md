@@ -99,7 +99,7 @@ g++ -o test_threads ../test/test_threads.cpp -pthread
 1. **Preload the shared library**:
 
 ```bash
-LD_PRELOAD=./build/libThreadingProfiler.so ./test_threads
+LD_PRELOAD=../ThreadingProfiler/build/libThreadingProfiler.so ./test_threads
 ```
 
 2. **Output**: You’ll see logging of thread creation and joining printed to `stdout` or a log file if enabled.
