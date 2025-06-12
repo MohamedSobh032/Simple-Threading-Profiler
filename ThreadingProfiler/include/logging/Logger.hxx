@@ -10,7 +10,7 @@ class Logger
 {
 private:
     static Logger *instance_;
-    static std::mutex mutex_;
+    static std::atomic<bool> ready_;
     std::vector<std::unique_ptr<ILogger>> loggers;
 
     Logger() = default;

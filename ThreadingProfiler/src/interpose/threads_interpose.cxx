@@ -37,9 +37,20 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
     auto wrapper = [](void *data) -> void *
     {
         ThreadArgs *args = static_cast<ThreadArgs *>(data);
-        fprintf(stderr, "[Profiler] Thread started\n");
+
+        LogMessage msg{
+            .type = LogType::THREAD_START,
+            .severity = LogSeverity::INFO,
+            .time = std::chrono::system_clock::now(),
+            .data = ThreadInfo{pthread_self()}};
+        Logger::get_instance()->log(msg);
+
         void *result = args->start_routine(args->arg);
-        fprintf(stderr, "[Profiler] Thread exited\n");
+
+        msg.type = LogType::THREAD_FINISH;
+        msg.time = std::chrono::system_clock::now();
+        Logger::get_instance()->log(msg);
+
         delete args;
         return result;
     };
@@ -53,8 +64,12 @@ int pthread_join(pthread_t t, void **res)
     if (!real_pthread_join)
         real_pthread_join = (int (*)(pthread_t, void **))dlsym(RTLD_NEXT, "pthread_join");
 
-    // Log thread creation timestamp, thread ID (after join), etc.
-    fprintf(stderr, "[Profiler] Thread is being joined at time %ld\n", time(NULL));
+    LogMessage msg{
+        .type = LogType::THREAD_JOIN,
+        .severity = LogSeverity::INFO,
+        .time = std::chrono::system_clock::now(),
+        .data = ThreadInfo{pthread_self()}};
+    Logger::get_instance()->log(msg);
 
     return real_pthread_join(t, res);
 }
@@ -64,8 +79,12 @@ void pthread_exit(void *value_ptr)
     if (!real_pthread_exit)
         real_pthread_exit = (void (*)(void *))dlsym(RTLD_NEXT, "pthread_exit");
 
-    // Log thread creation timestamp, thread ID (after join), etc.
-    fprintf(stderr, "[Profiler] Thread is being exited at time %ld\n", time(NULL));
+    LogMessage msg{
+        .type = LogType::THREAD_EXIT,
+        .severity = LogSeverity::INFO,
+        .time = std::chrono::system_clock::now(),
+        .data = ThreadInfo{pthread_self()}};
+    Logger::get_instance()->log(msg);
 
     real_pthread_exit(value_ptr);
 }
@@ -75,8 +94,12 @@ int pthread_cancel(pthread_t thread)
     if (!real_pthread_cancel)
         real_pthread_cancel = (int (*)(pthread_t))dlsym(RTLD_NEXT, "pthread_cancel");
 
-    // Log thread creation timestamp, thread ID (after join), etc.
-    fprintf(stderr, "[Profiler] Thread is being cancelled at time %ld\n", time(NULL));
+    LogMessage msg{
+        .type = LogType::THREAD_CANCEL,
+        .severity = LogSeverity::INFO,
+        .time = std::chrono::system_clock::now(),
+        .data = ThreadInfo{pthread_self()}};
+    Logger::get_instance()->log(msg);
 
     return real_pthread_cancel(thread);
 }

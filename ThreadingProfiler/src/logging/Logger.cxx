@@ -1,11 +1,12 @@
 #include "../../include/logging/Logger.hxx"
 
+#include <atomic>
+
 Logger *Logger::instance_{nullptr};
-std::mutex Logger::mutex_;
+std::atomic<bool> Logger::ready_{false};
 
 Logger *Logger::get_instance()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     if (instance_ == nullptr)
         instance_ = new Logger();
     return instance_;

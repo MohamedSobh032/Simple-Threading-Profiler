@@ -26,11 +26,16 @@ enum class LogType
     THREAD_JOIN,
     THREAD_EXIT,
     THREAD_CANCEL,
+    THREAD_START,
+    THREAD_FINISH,
+
     // mutex logs
     MUTEX_CREATE,
     MUTEX_DESTROYED,
     MUTEX_LOCK,
+    MUTEX_TRYLOCK,
     MUTEX_UNLOCK,
+
     // errors
     DEADLOCK_DETECT,
 };
@@ -47,14 +52,22 @@ inline const char *to_string(LogType type)
         return "THREAD_EXIT";
     case LogType::THREAD_CANCEL:
         return "THREAD_CANCEL";
+    case LogType::THREAD_START:
+        return "THREAD_START";
+    case LogType::THREAD_FINISH:
+        return "THREAD_FINISH";
+
     case LogType::MUTEX_CREATE:
         return "MUTEX_CREATE";
     case LogType::MUTEX_DESTROYED:
         return "MUTEX_DESTROYED";
     case LogType::MUTEX_LOCK:
         return "MUTEX_LOCK";
+    case LogType::MUTEX_TRYLOCK:
+        return "MUTEX_TRYLOCK";
     case LogType::MUTEX_UNLOCK:
         return "MUTEX_UNLOCK";
+
     case LogType::DEADLOCK_DETECT:
         return "DEADLOCK_DETECT";
     }

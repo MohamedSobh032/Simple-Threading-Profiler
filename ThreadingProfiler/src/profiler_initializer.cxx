@@ -14,7 +14,6 @@ inline void load_env_file(const std::filesystem::path &path = "../ThreadingProfi
     if (!file)
         throw std::runtime_error("COULDN'T FIND ENV FILE: " + path.string());
 
-    fprintf(stderr, "[PROFILER] Found the following\n");
     std::string line;
     while (std::getline(file, line))
     {
@@ -39,7 +38,6 @@ __attribute__((constructor)) static void initialize_logger()
     const char *log_path_env = std::getenv("LOGGER_PATH");
     std::filesystem::path log_path = log_path_env ? std::filesystem::path(log_path_env) : std::filesystem::path("/tmp/thread_log.txt");
     logger->add_logger(std::make_unique<FileLogger>(log_path));
-    fprintf(stderr, "[PROFILER] added a logger\n");
 }
 
 __attribute__((destructor)) static void shutdown_logger()
