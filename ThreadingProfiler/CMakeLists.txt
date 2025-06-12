@@ -7,7 +7,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(include)
 
 add_library(ThreadingProfiler SHARED
-    src/interpose.cxx
+    src/interpose/threads_interpose.cxx
+    src/interpose/mutex_interpose.cxx
     # src/wrappers.cxx
     # src/logger.cxx
     # src/utils.cxx

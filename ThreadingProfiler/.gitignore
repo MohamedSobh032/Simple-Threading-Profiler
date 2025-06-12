@@ -15,14 +15,7 @@
 *.out
 *.log
 
-# IDE-specific files
-*.swp
-*.DS_Store
-*.vscode/
-*.idea/
-
 # Test binaries
-/test_threads
 *.dSYM/
 
 # Logs

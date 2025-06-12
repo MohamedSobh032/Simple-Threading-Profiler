@@ -72,5 +72,5 @@ int pthread_cancel(pthread_t thread)
     // Log thread creation timestamp, thread ID (after join), etc.
     fprintf(stderr, "[Profiler] Thread is being cancelled at time %ld\n", time(NULL));
 
-    return real_pthread_exit(thread);
+    return real_pthread_cancel(thread);
 }
