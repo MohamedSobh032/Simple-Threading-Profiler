@@ -12,7 +12,6 @@ private:
     static Logger *instance_;
     static std::atomic<bool> ready_;
     std::vector<std::unique_ptr<ILogger>> loggers;
-
     Logger() = default;
 
 public:

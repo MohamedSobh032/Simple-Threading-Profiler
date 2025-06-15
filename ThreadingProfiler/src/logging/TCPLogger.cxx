@@ -1,8 +1,31 @@
 #include "../../include/logging/TCPLogger.hxx"
+
 #include <nlohmann/json.hpp>
 #include <arpa/inet.h>
 #include <stdexcept>
 #include <unistd.h>
+
+inline void to_json(nlohmann::json &j, const ThreadInfo &thread_info)
+{
+    j = nlohmann::json{
+        {"threadID", thread_info.tid},
+        {"systemID", thread_info.system_tid},
+        {"blocking resource", thread_info.blocking_resource}};
+}
+
+void to_json(nlohmann::json &j, const MutexInfo &m)
+{
+    j = nlohmann::json{
+        {"mid", m.mid},
+        {"ptr", reinterpret_cast<uintptr_t>(m.ptr)},
+        {"owner_tid", m.owner_tid}};
+}
+
+void to_json(nlohmann::json &j, const DeadlockInfo &d)
+{
+    j = nlohmann::json{
+        {"hello", "hi"}};
+}
 
 inline void to_json(nlohmann::json &j, const LogMessage &msg)
 {
@@ -10,6 +33,8 @@ inline void to_json(nlohmann::json &j, const LogMessage &msg)
         {"type", to_string(msg.type)},
         {"severity", to_string(msg.severity)},
         {"time", std::chrono::duration_cast<std::chrono::milliseconds>(msg.time.time_since_epoch()).count()}};
+    std::visit([&j](auto &&arg)
+               { j["data"] = arg; }, msg.data);
 }
 
 TCPLogger::TCPLogger(int port)

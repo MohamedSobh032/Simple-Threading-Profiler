@@ -4,12 +4,33 @@
 
 #include "../../include/logging/Logger.hxx"
 
+#include <atomic>
+#include <cstring>
 #include <pthread.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+
+static std::atomic<uint64_t> thread_counter{1};
+
+ThreadInfo get_current_thread_info(uint64_t blocking_resource = 0)
+{
+    ThreadInfo info;
+
+    // Custom logical TID (you may override if needed)
+    info.tid = thread_counter;
+    thread_counter++;
+
+    // System thread ID
+    info.system_tid = pthread_self();
+
+    // Blocking resource (0 = not blocked)
+    info.blocking_resource = blocking_resource;
+
+    return info;
+}
 
 static int (*real_pthread_create)(pthread_t *, const pthread_attr_t *attr, void *(*start_routine)(void *), void *) = NULL;
 static int (*real_pthread_join)(pthread_t, void **) = NULL;
@@ -25,7 +46,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
         .type = LogType::THREAD_CREATE,
         .severity = LogSeverity::INFO,
         .time = std::chrono::system_clock::now(),
-        .data = ThreadInfo{pthread_self()}};
+        .data = get_current_thread_info()};
     Logger::get_instance()->log(msg);
 
     struct ThreadArgs
@@ -42,7 +63,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_
             .type = LogType::THREAD_START,
             .severity = LogSeverity::INFO,
             .time = std::chrono::system_clock::now(),
-            .data = ThreadInfo{pthread_self()}};
+            .data = get_current_thread_info()};
         Logger::get_instance()->log(msg);
 
         void *result = args->start_routine(args->arg);
@@ -68,7 +89,7 @@ int pthread_join(pthread_t t, void **res)
         .type = LogType::THREAD_JOIN,
         .severity = LogSeverity::INFO,
         .time = std::chrono::system_clock::now(),
-        .data = ThreadInfo{pthread_self()}};
+        .data = get_current_thread_info()};
     Logger::get_instance()->log(msg);
 
     return real_pthread_join(t, res);
@@ -83,7 +104,7 @@ void pthread_exit(void *value_ptr)
         .type = LogType::THREAD_EXIT,
         .severity = LogSeverity::INFO,
         .time = std::chrono::system_clock::now(),
-        .data = ThreadInfo{pthread_self()}};
+        .data = get_current_thread_info()};
     Logger::get_instance()->log(msg);
 
     real_pthread_exit(value_ptr);
@@ -98,7 +119,7 @@ int pthread_cancel(pthread_t thread)
         .type = LogType::THREAD_CANCEL,
         .severity = LogSeverity::INFO,
         .time = std::chrono::system_clock::now(),
-        .data = ThreadInfo{pthread_self()}};
+        .data = get_current_thread_info()};
     Logger::get_instance()->log(msg);
 
     return real_pthread_cancel(thread);
