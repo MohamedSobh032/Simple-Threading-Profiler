@@ -1,5 +1,6 @@
 #include "../include/logging/Logger.hxx"
 #include "../include/logging/FileLogger.hxx"
+#include "../include/logging/TCPLogger.hxx"
 #include <fstream>
 #include <string>
 #include <cstdlib>
@@ -30,16 +31,24 @@ inline void load_env_file(const std::filesystem::path &path = "../ThreadingProfi
     }
 }
 
-__attribute__((constructor)) static void initialize_logger()
+__attribute__((constructor)) static void initialize_profiler()
 {
+    // needed loadings
     load_env_file();
 
-    auto logger = Logger::get_instance();
+    // file logger initialization
     const char *log_path_env = std::getenv("LOGGER_PATH");
-    std::filesystem::path log_path = log_path_env ? std::filesystem::path(log_path_env) : std::filesystem::path("/tmp/thread_log.txt");
-    logger->add_logger(std::make_unique<FileLogger>(log_path));
+    std::filesystem::path log_path = std::filesystem::path(log_path_env);
+
+    // tcp logger initialization
+    const char *port_path_env = std::getenv("SERVER_PORT");
+    int port = atoi(port_path_env);
+
+    // logger initialization
+    Logger::get_instance()->add_logger(std::make_unique<FileLogger>(log_path));
+    Logger::get_instance()->add_logger(std::make_unique<TCPLogger>(port));
 }
 
-__attribute__((destructor)) static void shutdown_logger()
+__attribute__((destructor)) static void cleanup_profiler()
 {
 }
