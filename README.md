@@ -91,7 +91,7 @@ make
 3. **Build the test binary**:
 
 ```bash
-g++ -o test_threads ./test_threads.cpp -pthread
+g++ -o test_threads ./base_threads.cxx -pthread
 ```
 
 ## 🚀 How to Use the Profiler Library

@@ -1,10 +1,10 @@
+#include <iostream>
 #include <pthread.h>
 #include <unistd.h>
-#include <iostream>
 
 void *myThread(void *arg)
 {
-    std::cout << "Thread is running...\n";
+    std::cout << "Thread is running... " << getpid() << "\n";
     sleep(1);
     return nullptr;
 }

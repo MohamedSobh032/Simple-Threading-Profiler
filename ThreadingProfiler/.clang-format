@@ -1,0 +1,16 @@
+BasedOnStyle: LLVM
+Language: Cpp
+ColumnLimit: 120
+IndentWidth: 4
+UseTab: Never
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakAfterDefinitionReturnType: TopLevel
+AlwaysBreakAfterReturnType: TopLevel
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterStruct: true
+  AfterClass: true
+  AfterFunction: true
+Cpp11BracedListStyle: true
+PointerAlignment: Left
+IndentPPDirectives: AfterHash
