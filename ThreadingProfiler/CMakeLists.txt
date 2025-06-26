@@ -9,6 +9,8 @@ include_directories(include)
 add_library(ThreadingProfiler SHARED
     core/interpose/pthread_interpose.cpp
     core/interpose/mutex_interpose.cpp
+    core/event/thread_event.cpp
+    core/event/mutex_event.cpp
 )
 
 include(FetchContent)
