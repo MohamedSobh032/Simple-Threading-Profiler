@@ -12,6 +12,6 @@ now()
   return std::chrono::steady_clock::now().time_since_epoch().count();
 }
 
-} // namespace utils
+}  // namespace utils
 
 #endif

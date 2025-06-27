@@ -1,15 +1,16 @@
 #ifndef _THREAD_EVENT
 #define _THREAD_EVENT
 
-#include "event.hpp"
 #include <unistd.h>
+
+#include "event.hpp"
 
 class ThreadEvent : public Event
 {
-private:
+ private:
   pid_t tid_;
 
-public:
+ public:
   ThreadEvent(EventType t);
   ~ThreadEvent();
 

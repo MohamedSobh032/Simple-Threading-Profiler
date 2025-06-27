@@ -5,9 +5,9 @@
 #include <pthread.h>
 #include <stdio.h>
 
-thread_local int counter = 0;
+thread_local int counter                                  = 0;
 
-static int (*real_pthread_mutex_lock)(pthread_mutex_t*) = NULL;
+static int (*real_pthread_mutex_lock)(pthread_mutex_t*)   = NULL;
 static int (*real_pthread_mutex_unlock)(pthread_mutex_t*) = NULL;
 
 int

@@ -4,12 +4,11 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #include <stdio.h>
-
 #include <sys/syscall.h>
 #include <unistd.h>
 
 static int (*real_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*) = NULL;
-static int (*real_pthread_join)(pthread_t, void**) = NULL;
+static int (*real_pthread_join)(pthread_t, void**)                                            = NULL;
 
 struct ThreadArgs
 {
@@ -44,9 +43,9 @@ pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_rout
   };
 
   ThreadArgs* data = new ThreadArgs{start_routine, arg};
-  int result = real_pthread_create(thread, attr, wrapper, data);
+  int result       = real_pthread_create(thread, attr, wrapper, data);
 
-  pid_t tid = syscall(SYS_gettid);
+  pid_t tid        = syscall(SYS_gettid);
 
   // TODO: REMOVE
   fprintf(stderr, "[PROFILER] pthread_create returned %d using id: %d\n", result, static_cast<int>(tid));
@@ -57,8 +56,7 @@ pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_rout
 int
 pthread_join(pthread_t thread, void** value_ptr)
 {
-  if (!real_pthread_join)
-    real_pthread_join = (int (*)(pthread_t, void**))dlsym(RTLD_NEXT, "pthread_join");
+  if (!real_pthread_join) real_pthread_join = (int (*)(pthread_t, void**))dlsym(RTLD_NEXT, "pthread_join");
 
   fprintf(stderr, "[PROFILER] pthread_join called\n");
 

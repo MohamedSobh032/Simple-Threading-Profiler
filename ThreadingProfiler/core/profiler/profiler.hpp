@@ -12,6 +12,6 @@ thread_local EventQueue local_ev_q;
 void
 submit(const Event& ev);
 
-}; // namespace profiler
+};  // namespace profiler
 
 #endif

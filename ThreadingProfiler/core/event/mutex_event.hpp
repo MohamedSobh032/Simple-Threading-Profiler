@@ -1,17 +1,18 @@
 #ifndef _MUTEX_EVENT
 #define _MUTEX_EVENT
 
-#include "event.hpp"
 #include <pthread.h>
 #include <unistd.h>
 
+#include "event.hpp"
+
 class MutexEvent : public Event
 {
-private:
+ private:
   pid_t tid_;
   pthread_mutex_t* mid_;
 
-public:
+ public:
   MutexEvent(EventType t, pthread_mutex_t* mid);
   ~MutexEvent();
 

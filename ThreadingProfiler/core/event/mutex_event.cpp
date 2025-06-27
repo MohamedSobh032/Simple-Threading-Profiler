@@ -1,13 +1,15 @@
 #include "mutex_event.hpp"
-#include "../utils/timestamp.hpp"
+
 #include <sys/syscall.h>
+
+#include "../utils/timestamp.hpp"
 
 MutexEvent::MutexEvent(EventType t, pthread_mutex_t* mid)
 {
-  this->type_ = t;
+  this->type_      = t;
   this->timestamp_ = utils::now();
-  this->tid_ = syscall(SYS_gettid);
-  this->mid_ = mid;
+  this->tid_       = syscall(SYS_gettid);
+  this->mid_       = mid;
 }
 
 pid_t
