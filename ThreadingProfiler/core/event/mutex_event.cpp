@@ -12,6 +12,12 @@ MutexEvent::MutexEvent(EventType t, pthread_mutex_t* mid)
   this->mid_       = mid;
 }
 
+nlohmann::json
+MutexEvent::to_json() const
+{
+  return nlohmann::json{{"tid", this->tid_}, {"timestamp", this->timestamp_}, {"type", to_string(this->type_)}};
+}
+
 pid_t
 MutexEvent::get_thread_id() const noexcept
 {

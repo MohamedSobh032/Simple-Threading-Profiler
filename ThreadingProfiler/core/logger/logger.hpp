@@ -19,6 +19,7 @@ class Logger
   static Logger& instance();
   void add_logger(std::unique_ptr<ILogger> logger);
   void log(const Event& ev);
+  void flush_mpsc();
   void destruct();
 };
 

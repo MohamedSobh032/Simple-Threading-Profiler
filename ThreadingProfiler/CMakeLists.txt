@@ -8,6 +8,7 @@ include_directories(include)
 
 add_library(ThreadingProfiler SHARED
     core/global_initializer.cpp
+    core/profiler_tls.cpp
     core/interpose/pthread_interpose.cpp
     core/interpose/mutex_interpose.cpp
     core/event/thread_event.cpp

@@ -2,13 +2,12 @@
 #define _PROFILER
 
 #include "../event/event.hpp"
-#include "../event/event_queue.hpp"
 
 namespace profiler
 {
 
 void
-submit(const Event& ev);
+submit(std::unique_ptr<Event> ev);
 
 };  // namespace profiler
 

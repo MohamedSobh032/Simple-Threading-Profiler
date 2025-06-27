@@ -1,14 +1,16 @@
 #include "profiler.hpp"
 
+#include "../event/event_queue.hpp"
 #include "global_tracker.hpp"
 
-thread_local EventQueue local_ev_q;
+thread_local EventQueue lq;
 
 void
-profiler::submit(const Event& ev)
+profiler::submit(std::unique_ptr<Event> ev)
 {
   // submit to local entry
-  local_ev_q.push(ev);
+  lq.push(std::move(ev));
+
   // submit to global tracker
-  GlobalTracker::instance().record(ev);
+  GlobalTracker::instance().record(*ev);
 }

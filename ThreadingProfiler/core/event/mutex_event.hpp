@@ -15,7 +15,7 @@ class MutexEvent : public Event
  public:
   MutexEvent(EventType t, pthread_mutex_t* mid);
   ~MutexEvent();
-
+  nlohmann::json to_json() const override;
   pid_t get_thread_id() const noexcept;
   pthread_mutex_t* get_mutex_id() const noexcept;
 };

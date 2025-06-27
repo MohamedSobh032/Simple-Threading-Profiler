@@ -42,8 +42,9 @@ TCPLogger::TCPLogger(int port)
 void
 TCPLogger::log(const Event& ev)
 {
-  // TODO: implement to_json in Event classes, and log it
-  fprintf(stderr, "Logging\n");
+  nlohmann::json j       = ev.to_json();
+  std::string serialized = j.dump() + "\n";
+  send(client_fd, serialized.c_str(), serialized.size(), 0);
 }
 
 TCPLogger::~TCPLogger()

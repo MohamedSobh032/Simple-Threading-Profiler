@@ -10,9 +10,9 @@ EventQueue::EventQueue()
 }
 
 void
-EventQueue::push(const Event& ev)
+EventQueue::push(std::unique_ptr<Event> ev)
 {
-  this->q_.push(ev);
+  this->q_.push(std::move(ev));
   if (this->q_.size() == FLUSH_RATE)
   {
     this->flush();
@@ -25,11 +25,8 @@ EventQueue::flush()
   auto& ins_ = MPSCQueue::instance();
   while (!this->q_.empty())
   {
-    Event e = std::move(this->q_.front());
+    ins_.push(std::move(this->q_.front()));
     this->q_.pop();
-
-    auto ptr = std::make_unique<Event>(std::move(e));
-    ins_.push(std::move(ptr));
   }
 }
 

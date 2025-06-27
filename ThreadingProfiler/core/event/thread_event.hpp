@@ -13,7 +13,7 @@ class ThreadEvent : public Event
  public:
   ThreadEvent(EventType t);
   ~ThreadEvent();
-
+  nlohmann::json to_json() const override;
   pid_t get_thread_id() const noexcept;
 };
 

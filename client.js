@@ -6,7 +6,7 @@ const client = net.createConnection({ port: 9090 }, () => {
 });
 
 client.on('data', (data) => {
-  console.log('Received from C++:', data.toString());
+  console.log(data.toString());
 });
 
 client.on('end', () => {

@@ -1,6 +1,7 @@
 #ifndef _EVENT_QUEUE
 #define _EVENT_QUEUE
 
+#include <memory>
 #include <queue>
 
 #include "event.hpp"
@@ -8,13 +9,12 @@
 class EventQueue
 {
  private:
-  std::queue<Event> q_;
-
+  std::queue<std::unique_ptr<Event>> q_;
   void flush();
 
  public:
   EventQueue();
-  void push(const Event& ev);
+  void push(std::unique_ptr<Event> ev);
   ~EventQueue();
 };
 

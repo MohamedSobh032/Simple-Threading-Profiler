@@ -22,12 +22,18 @@ Logger::log(const Event& ev)
 }
 
 void
-Logger::destruct()
+Logger::flush_mpsc()
 {
   auto& q = MPSCQueue::instance();
   while (!q.empty())
   {
     auto e = q.pop();
-    Logger::instance().log(*e);
+    this->log(*e);
   }
+}
+
+void
+Logger::destruct()
+{
+  this->flush_mpsc();
 }
