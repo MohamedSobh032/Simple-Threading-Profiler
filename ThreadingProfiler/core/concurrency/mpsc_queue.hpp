@@ -14,8 +14,25 @@ class MPSCQueue
   alignas(64) std::atomic<std::size_t> rear_;
   alignas(64) std::size_t front_;
 
- public:
+  void init()
+  {
+    this->rear_  = 0;
+    this->front_ = 0;
+    this->buffer_.fill(nullptr);
+  }
+
   MPSCQueue() : rear_(0), front_(0) { this->buffer_.fill(nullptr); }
+
+ public:
+  // delete copy constructor and assignment operator
+  MPSCQueue(MPSCQueue& other)           = delete;
+  void operator=(const MPSCQueue other) = delete;
+
+  static MPSCQueue& instance()
+  {
+    static MPSCQueue instance_;
+    return instance_;
+  }
 
   bool empty() const { return this->front_ == this->rear_.load(std::memory_order_acquire); }
 

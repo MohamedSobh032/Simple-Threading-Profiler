@@ -1,10 +1,12 @@
 #include "profiler.hpp"
 
+#include "global_tracker.hpp"
+
 void
 profiler::submit(const Event& ev)
 {
   // submit to local entry
-  local_ev_q.push(e);
+  local_ev_q.push(ev);
   // submit to global tracker
-  // TODO: submit to global tracker
+  GlobalTracker::instance().record(ev);
 }

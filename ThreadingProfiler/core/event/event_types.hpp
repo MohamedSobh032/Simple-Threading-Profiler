@@ -9,7 +9,10 @@ enum class EventType
   THRD_JOIN,
 
   MUTX_LOCK,
-  MUTX_UNLK
+  MUTX_UNLK,
+
+  THRD_WAIT,
+  DEAD_LOCK,
 };
 
 #endif

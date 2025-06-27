@@ -7,10 +7,13 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include_directories(include)
 
 add_library(ThreadingProfiler SHARED
+    core/global_initializer.cpp
     core/interpose/pthread_interpose.cpp
     core/interpose/mutex_interpose.cpp
     core/event/thread_event.cpp
     core/event/mutex_event.cpp
+    core/event/event_queue.cpp
+    core/profiler/profiler.cpp
 )
 
 include(FetchContent)
