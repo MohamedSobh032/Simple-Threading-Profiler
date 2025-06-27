@@ -5,7 +5,7 @@
 
 #include "logger_interface.hpp"
 
-class TCPLogger : public ILogger<Event>
+class TCPLogger : public ILogger
 {
  private:
   int server_fd, client_fd;

@@ -3,12 +3,11 @@
 
 #include "../event/event.hpp"
 
-template <typename T>
 class ILogger
 {
  public:
-  virtual ~ILogger()            = default;
-  virtual void log(const T& ev) = 0;
+  virtual ~ILogger()                = default;
+  virtual void log(const Event& ev) = 0;
 };
 
 #endif

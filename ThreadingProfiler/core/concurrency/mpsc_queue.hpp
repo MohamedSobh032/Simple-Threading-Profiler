@@ -3,28 +3,28 @@
 
 #include <array>
 #include <atomic>
+#include <memory>
 
-template <typename T, std::size_t SIZE>
+#include "../event/event.hpp"
+
+const int SIZE = 1024;
+
 class MPSCQueue
 {
-  static_assert((SIZE & (SIZE - 1)) == 0, "SIZE must be power of two for efficient modulo");
-
  private:
-  std::array<T*, SIZE> buffer_;
+  std::array<std::unique_ptr<Event>, SIZE> buffer_;
   alignas(64) std::atomic<std::size_t> rear_;
   alignas(64) std::size_t front_;
 
-  void init()
+  MPSCQueue() : rear_(0), front_(0)
   {
-    this->rear_  = 0;
-    this->front_ = 0;
-    this->buffer_.fill(nullptr);
+    for (auto& e : this->buffer_)
+    {
+      e = nullptr;
+    }
   }
 
-  MPSCQueue() : rear_(0), front_(0) { this->buffer_.fill(nullptr); }
-
  public:
-  // delete copy constructor and assignment operator
   MPSCQueue(MPSCQueue& other)           = delete;
   void operator=(const MPSCQueue other) = delete;
 
@@ -36,7 +36,7 @@ class MPSCQueue
 
   bool empty() const { return this->front_ == this->rear_.load(std::memory_order_acquire); }
 
-  bool push(const T* item)
+  bool push(std::unique_ptr<Event> item)
   {
     std::size_t curr_rear = this->rear_.fetch_add(1, std::memory_order_acq_rel);
     std::size_t index     = curr_rear % SIZE;
@@ -46,27 +46,18 @@ class MPSCQueue
       return false;
     }
 
-    this->buffer_[index] = item;
+    this->buffer_[index] = std::move(item);
     return true;
   }
 
-  T* pop()
+  std::unique_ptr<Event> pop()
   {
     if (this->empty()) return nullptr;
     std::size_t index    = this->front_ % SIZE;
-    T* item              = this->buffer_[index];
+    auto item            = std::move(this->buffer_[index]);
     this->buffer_[index] = nullptr;
     ++this->front_;
     return item;
-  }
-
-  ~MPSCQueue()
-  {
-    for (auto& ptr : this->buffer_)
-    {
-      delete ptr;
-      ptr = nullptr;
-    }
   }
 };
 

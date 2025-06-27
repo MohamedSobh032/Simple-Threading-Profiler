@@ -1,5 +1,7 @@
 #include "event_queue.hpp"
 
+#include "../concurrency/mpsc_queue.hpp"
+
 #define FLUSH_RATE 1
 
 EventQueue::EventQueue()
@@ -20,7 +22,15 @@ EventQueue::push(const Event& ev)
 void
 EventQueue::flush()
 {
-  // TODO: implement logic
+  auto& ins_ = MPSCQueue::instance();
+  while (!this->q_.empty())
+  {
+    Event e = std::move(this->q_.front());
+    this->q_.pop();
+
+    auto ptr = std::make_unique<Event>(std::move(e));
+    ins_.push(std::move(ptr));
+  }
 }
 
 EventQueue::~EventQueue() { this->flush(); }
