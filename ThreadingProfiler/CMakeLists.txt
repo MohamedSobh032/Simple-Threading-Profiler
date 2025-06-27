@@ -14,6 +14,7 @@ add_library(ThreadingProfiler SHARED
     core/event/mutex_event.cpp
     core/event/event_queue.cpp
     core/profiler/profiler.cpp
+    core/logger/tcp_logger.cpp
 )
 
 include(FetchContent)

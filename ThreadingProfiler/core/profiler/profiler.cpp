@@ -2,6 +2,8 @@
 
 #include "global_tracker.hpp"
 
+thread_local EventQueue local_ev_q;
+
 void
 profiler::submit(const Event& ev)
 {

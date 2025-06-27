@@ -7,8 +7,6 @@
 namespace profiler
 {
 
-thread_local EventQueue local_ev_q;
-
 void
 submit(const Event& ev);
 
