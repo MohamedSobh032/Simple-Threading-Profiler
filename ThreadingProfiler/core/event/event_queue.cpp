@@ -11,7 +11,7 @@ void
 EventQueue::push(const Event& ev)
 {
   this->q_.push(ev);
-  if (this->q_.size() == 1)
+  if (this->q_.size() == FLUSH_RATE)
   {
     this->flush();
   }
@@ -23,10 +23,4 @@ EventQueue::flush()
   // TODO: implement logic
 }
 
-EventQueue::~EventQueue()
-{
-  while (!this->q_.empty())
-  {
-    q.pop();
-  }
-}
+EventQueue::~EventQueue() { this->flush(); }

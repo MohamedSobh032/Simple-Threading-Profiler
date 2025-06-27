@@ -1,16 +1,29 @@
 BasedOnStyle: LLVM
 Language: Cpp
+
 ColumnLimit: 120
 IndentWidth: 2
 UseTab: Never
-AllowShortFunctionsOnASingleLine: None
-AlwaysBreakAfterDefinitionReturnType: TopLevel
+
+# Function formatting
 AlwaysBreakAfterReturnType: TopLevel
+AlwaysBreakAfterDefinitionReturnType: TopLevel
+
 BreakBeforeBraces: Allman
 BraceWrapping:
-  AfterStruct: true
-  AfterClass: true
   AfterFunction: true
-Cpp11BracedListStyle: true
+  AfterClass: true
+  AfterStruct: true
+
 PointerAlignment: Left
+Cpp11BracedListStyle: true
 IndentPPDirectives: AfterHash
+
+# Ensures declarations stay compact, while definitions break
+SeparateDefinitionBlocks: Always
+ArrayInitializerAlignmentStyle: Always
+
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
