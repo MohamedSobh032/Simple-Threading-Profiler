@@ -13,8 +13,10 @@ add_library(ThreadingProfiler SHARED
     core/interpose/mutex_interpose.cpp
     core/event/thread_event.cpp
     core/event/mutex_event.cpp
+    core/event/deadlock_event.cpp
     core/event/event_queue.cpp
     core/profiler/profiler.cpp
+    core/profiler/global_tracker.cpp
     core/logger/tcp_logger.cpp
     core/logger/logger.cpp
 )

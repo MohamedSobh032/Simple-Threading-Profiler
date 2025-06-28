@@ -5,6 +5,8 @@
 #include <pthread.h>
 #include <stdio.h>
 
+#include "../event/mutex_event.hpp"
+#include "../profiler/profiler.hpp"
 #include "../profiler_tls.hpp"
 
 static int (*real_pthread_mutex_lock)(pthread_mutex_t*)   = NULL;
@@ -18,10 +20,13 @@ pthread_mutex_lock(pthread_mutex_t* mutex)
 
   if (profiling_disabled) return real_pthread_mutex_lock(mutex);
 
-  // TODO: REMOVE fprintf
-  fprintf(stderr, "[PROFILER] pthread_mutex_lock called\n");
+  profiler::submit(std::make_unique<MutexEvent>(EventType::MUTEX_WAIT, mutex));
 
-  return real_pthread_mutex_lock(mutex);
+  int result = real_pthread_mutex_lock(mutex);
+
+  profiler::submit(std::make_unique<MutexEvent>(EventType::MUTEX_LOCK, mutex));
+
+  return result;
 }
 
 int
@@ -32,8 +37,7 @@ pthread_mutex_unlock(pthread_mutex_t* mutex)
 
   if (profiling_disabled) return real_pthread_mutex_unlock(mutex);
 
-  // TODO: REMOVE fprintf
-  fprintf(stderr, "[PROFILER] pthread_mutex_unlock called\n");
+  profiler::submit(std::make_unique<MutexEvent>(EventType::MUTEX_UNLOCK, mutex));
 
   return real_pthread_mutex_unlock(mutex);
 }

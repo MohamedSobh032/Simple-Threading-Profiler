@@ -1,16 +1,19 @@
 #ifndef _GLOBAL_TRACKER
 #define _GLOBAL_TRACKER
 
-#include <pthread.h>
-
 #include <unordered_map>
+#include <vector>
 
 #include "../event/event.hpp"
 
 class GlobalTracker
 {
  private:
-  std::unordered_map<pthread_mutex_t*, pid_t> acquisition_;
+  std::unordered_map<void*, std::vector<void*>> adj_;
+
+  bool detect_cycle(const pid_t tid, pthread_mutex_t* mid);
+  bool dfs(void* node, std::unordered_map<void*, bool>& visited, std::unordered_map<void*, bool>& rec_stack);
+  void remove_edge(void* p1, void* p2);
 
   GlobalTracker() = default;
 
@@ -19,17 +22,8 @@ class GlobalTracker
   GlobalTracker(GlobalTracker& other)       = delete;
   void operator=(const GlobalTracker other) = delete;
 
-  static GlobalTracker& instance()
-  {
-    static GlobalTracker instance_;
-    return instance_;
-  }
-
-  bool record(const Event& ev)
-  {
-    // TODO: implement deadlock detector logic
-    return true;
-  }
+  static GlobalTracker& instance();
+  bool record(const Event* ev);
 };
 
 #endif

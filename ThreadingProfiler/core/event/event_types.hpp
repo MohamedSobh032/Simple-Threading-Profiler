@@ -8,10 +8,10 @@ enum class EventType
   THREAD_END,
   THREAD_JOIN,
 
+  MUTEX_WAIT,
   MUTEX_LOCK,
-  MUTEX_UNLK,
+  MUTEX_UNLOCK,
 
-  THREAD_WAIT,
   DEAD_LOCK,
 };
 
@@ -28,12 +28,12 @@ to_string(EventType type)
       return "THREAD_END";
     case EventType::THREAD_JOIN:
       return "THREAD_JOIN";
+    case EventType::MUTEX_WAIT:
+      return "MUTEX_WAIT";
     case EventType::MUTEX_LOCK:
       return "MUTEX_LOCK";
-    case EventType::MUTEX_UNLK:
+    case EventType::MUTEX_UNLOCK:
       return "MUTEX_UNLK";
-    case EventType::THREAD_WAIT:
-      return "THREAD_WAIT";
     case EventType::DEAD_LOCK:
       return "DEAD_LOCK";
     default:

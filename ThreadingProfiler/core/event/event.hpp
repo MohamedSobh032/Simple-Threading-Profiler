@@ -18,7 +18,7 @@ class Event
 
   uint64_t get_timestamp() const noexcept { return this->timestamp_; }
 
-  EventType get_event_type() { return this->type_; }
+  EventType get_event_type() const { return this->type_; }
 };
 
 #endif
