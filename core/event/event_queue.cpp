@@ -8,10 +8,10 @@ EventQueue::EventQueue()
   // nothing
 }
 
-void EventQueue::push(std::unique_ptr<Event> ev)
+void EventQueue::push(std::unique_ptr<Event> ev, bool force_flush)
 {
   this->q_.push(std::move(ev));
-  if (this->q_.size() == LOCAL_QUEUE_FLUSH_RATE)
+  if (force_flush || this->q_.size() == LOCAL_QUEUE_FLUSH_RATE)
   {
     this->flush();
   }
@@ -27,4 +27,7 @@ void EventQueue::flush()
   }
 }
 
-EventQueue::~EventQueue() { this->flush(); }
+EventQueue::~EventQueue()
+{
+  this->flush();
+}

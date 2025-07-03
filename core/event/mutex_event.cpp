@@ -18,9 +18,15 @@ nlohmann::json MutexEvent::to_json() const
                         {"type", to_string(this->type_)}};
 }
 
-pid_t MutexEvent::get_thread_id() const noexcept { return this->tid_; }
+pid_t MutexEvent::get_thread_id() const noexcept
+{
+  return this->tid_;
+}
 
-pthread_mutex_t* MutexEvent::get_mutex_id() const noexcept { return this->mid_; }
+pthread_mutex_t* MutexEvent::get_mutex_id() const noexcept
+{
+  return this->mid_;
+}
 
 MutexEvent::~MutexEvent()
 {

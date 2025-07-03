@@ -7,12 +7,12 @@
 
 thread_local EventQueue lq;
 
-void profiler::submit(std::unique_ptr<Event> ev)
+void profiler::submit(std::unique_ptr<Event> ev, bool force_flush)
 {
   if (GlobalTracker::instance().record(ev.get()))
   {
     MPSCQueue::instance().push(std::make_unique<DeadlockEvent>(EventType::DEAD_LOCK));
     exit(EXIT_FAILURE);
   }
-  lq.push(std::move(ev));
+  lq.push(std::move(ev), force_flush);
 }

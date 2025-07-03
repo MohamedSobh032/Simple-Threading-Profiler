@@ -19,5 +19,11 @@ BraceWrapping:
   BeforeElse: true
   BeforeWhile: true
 
-# Pointer & array style
+# Ensure even small one-liners are broken into new line blocks
+AllowShortFunctionsOnASingleLine: None
+
+# Pointer style
 PointerAlignment: Left
+
+# Preprocessor indentation
+IndentPPDirectives: AfterHash

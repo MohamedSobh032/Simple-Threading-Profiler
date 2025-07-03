@@ -14,7 +14,7 @@ class EventQueue
 
  public:
   EventQueue();
-  void push(std::unique_ptr<Event> ev);
+  void push(std::unique_ptr<Event> ev, bool force_flush);
   ~EventQueue();
 };
 

@@ -23,4 +23,4 @@ __attribute__((constructor)) static void global_initializer()
       .detach();
 }
 
-__attribute__((destructor)) static void global_destructor() { Logger::instance().destruct(); }
+__attribute__((destructor)) static void global_destructor() { Logger::instance().flush_mpsc(); }

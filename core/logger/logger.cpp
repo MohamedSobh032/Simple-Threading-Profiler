@@ -4,11 +4,14 @@
 
 Logger& Logger::instance()
 {
-  static Logger logger_;
-  return logger_;
+  static Logger* logger_ = new Logger();
+  return *logger_;
 }
 
-void Logger::add_logger(std::unique_ptr<ILogger> logger) { this->loggers_.push_back(std::move(logger)); }
+void Logger::add_logger(std::unique_ptr<ILogger> logger)
+{
+  this->loggers_.push_back(std::move(logger));
+}
 
 void Logger::log(const Event& ev)
 {
@@ -21,8 +24,10 @@ void Logger::flush_mpsc()
   while (!q.empty())
   {
     auto e = q.pop();
+    if (!e)
+    {
+      continue;
+    }
     this->log(*e);
   }
 }
-
-void Logger::destruct() { this->flush_mpsc(); }

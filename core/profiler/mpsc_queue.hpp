@@ -25,6 +25,7 @@ class MPSCQueue
   bool empty() const;
   bool push(std::unique_ptr<Event> item);
   std::unique_ptr<Event> pop();
+  void check_nulls();
 };
 
 #endif

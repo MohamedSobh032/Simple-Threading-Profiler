@@ -1,5 +1,5 @@
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#  define _GNU_SOURCE
 #endif
 #include <dlfcn.h>
 #include <pthread.h>
@@ -23,7 +23,7 @@ int pthread_mutex_lock(pthread_mutex_t* mutex)
 
   int result = real_pthread_mutex_lock(mutex);
 
-  profiler::submit(std::make_unique<MutexEvent>(EventType::MUTEX_LOCK, mutex));
+  if (result == 0) profiler::submit(std::make_unique<MutexEvent>(EventType::MUTEX_LOCK, mutex));
 
   return result;
 }

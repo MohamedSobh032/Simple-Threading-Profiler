@@ -1,5 +1,5 @@
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#  define _GNU_SOURCE
 #endif
 #include <dlfcn.h>
 #include <pthread.h>
@@ -53,7 +53,6 @@ int pthread_join(pthread_t thread, void** value_ptr)
 
   int res = real_pthread_join(thread, value_ptr);
 
-  // only emit after join is really done
-  profiler::submit(std::make_unique<ThreadEvent>(EventType::THREAD_JOIN));
+  profiler::submit(std::make_unique<ThreadEvent>(EventType::THREAD_JOIN), true);
   return res;
 }

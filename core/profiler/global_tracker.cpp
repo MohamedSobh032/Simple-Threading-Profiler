@@ -48,8 +48,8 @@ void GlobalTracker::remove_edge(void* from, void* to)
 
 GlobalTracker& GlobalTracker::instance()
 {
-  static GlobalTracker instance_;
-  return instance_;
+  static GlobalTracker* instance_ = new GlobalTracker();
+  return *instance_;
 }
 
 bool GlobalTracker::record(const Event* ev)

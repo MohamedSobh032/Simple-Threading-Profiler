@@ -2,7 +2,9 @@
 
 #include "../utils/utils.hpp"
 
-DeadlockEvent::DeadlockEvent(EventType t) : Event(t, utils::now()) {}
+DeadlockEvent::DeadlockEvent(EventType t) : Event(t, utils::now())
+{
+}
 
 DeadlockEvent::~DeadlockEvent()
 {
