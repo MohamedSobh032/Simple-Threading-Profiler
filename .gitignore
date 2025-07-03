@@ -1,3 +1,25 @@
 .vscode
 test_threads
-remains.txt
+
+# Build directory
+/build/
+/CMakeFiles/
+/Makefile
+/CMakeCache.txt
+/cmake_install.cmake
+/compile_commands.json
+
+# Output files
+*.so
+*.a
+*.o
+*.obj
+*.exe
+*.out
+*.log
+
+# Test binaries
+*.dSYM/
+
+# Logs
+logs/
