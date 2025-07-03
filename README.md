@@ -36,10 +36,12 @@ Useful for debugging, profiling, and visualizing multi-threaded applications.
 ### 📌 `MPSCQueue`
 * Lock-free Multi-Producer Single-Consumer queue.
 * Each local queue flushes events into it, a dedicated logger thread consumes and processes.
+* Design Pattern used: Singleton
 
 ### 📌 `GlobalTracker`
 * Maintains a graph of thread ↔ mutex ownership.
 * Detects cycles = **deadlocks** using DFS-based Cycle Detection on a Wait-For Graph, emits special event.
+* Design Pattern used: Singleton
 
 ### 📌 `EventQueue`
 * Each thread keeps a thread-local event queue.
@@ -47,6 +49,7 @@ Useful for debugging, profiling, and visualizing multi-threaded applications.
 
 ### 📌 `Logger`
 * Consumes the `MPSCQueue`, serializes events to JSON, sends to TCP client.
+* Design Pattern used: Composite & Singleton
 
 ### 📌 `Interpose`
 * Overrides `pthread_create`, `pthread_mutex_lock`, `pthread_mutex_unlock`, etc.
