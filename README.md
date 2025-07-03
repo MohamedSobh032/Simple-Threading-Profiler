@@ -1,122 +1,111 @@
-# 🚦 Concurrency-Profiler
+# 🚀 Simple-Threading-Profiler
+A lightweight C++ concurrency profiler that interposes `pthread` functions to trace thread and mutex events, detect deadlocks, and stream live data for visualization.
 
-## 📄 Description
+## 📜 Description
+**Simple-Threading-Profiler** dynamically intercepts thread and mutex operations (like `pthread_create`, `pthread_mutex_lock`) to record events about concurrency in your application.
+It logs operations, detects cycles (potential deadlocks), and can stream the data over TCP to a frontend.
+Useful for debugging, profiling, and visualizing multi-threaded applications.
 
-Threading Profiler is a Linux-based C++ shared library that intercepts `pthread` operations (such as thread creation and joining) to monitor multithreaded applications. It uses `LD_PRELOAD` to inject itself into any target binary at runtime and logs threading behavior, enabling developers to analyze potential issues like excessive thread creation, mismanagement, or even deadlocks. It is accompanied by a simple front-end built with React/Next.js to visualize the results.
+## ⚙️ Tech Stack
+* **C++17** — core logic and interposing
+* **POSIX pthreads** — target of interception
+* **nlohmann/json** — event serialization
+* **Custom MPSC queue** — high performance thread-to-logger queue
+* **CMake** — build system
+* **Client examples** — minimal JavaScript client for TCP logs
 
-## 🛠️ Tech Stack
-
-* **C++**: Core interceptor logic using `pthread` and `dlsym`
-* **CMake**: Build system for compiling the shared library and test programs
-* **React / Next.js**: Frontend interface for viewing logs or visualizations (future enhancement)
-* **Linux**: Uses system-level features like `LD_PRELOAD`
-
-## ✨ Features
-
-* Intercepts `pthread_create` and `pthread_join`
-* Logs thread lifecycle events with timestamps
-* Easy runtime injection using `LD_PRELOAD`
-* Detects potential deadlocks by analyzing unjoined or blocked threads
-* Extendable interface for adding logging to mutexes and condition variables
-* Lightweight and no code change required in target program
-
-## 🧠 Project Hierarchy
-
+## 🗂️ Project Structure
 ```
-Concurrency-Visualizer/
-├── ThreadingProfiler/
-│   ├── CMakeLists.txt
-│   ├── include/
-│   │   └── logger.hpp
-│   ├── src/
-│   │   ├── interpose.cxx
-│   │   └── logger.cxx
-│   └── build/ *(gitignored)*
-├── test/
-│   └── test_threads.cpp
-├── frontend/ *(React App)*
-│   ├── pages/
-│   └── components/
+.
+├── core
+│   ├── event         # All event types & serialization
+│   ├── interpose     # LD_PRELOAD interposed pthread functions
+│   ├── logger        # TCP logger & interface
+│   ├── profiler      # Global tracker, MPSC queue, profiler API
+│   ├── utils         # Timestamps, helpers
+│   └── config.hpp    # Compile-time settings
+│
+├── tests             # Example multi-threaded tests
+├── client.js         # Simple TCP client to receive event stream
+├── CMakeLists.txt
 └── README.md
 ```
 
-## 🔁 Sequence Diagram: Normal Thread Calls
+## 🔍 Components Explanation
+
+### 📌 `MPSCQueue`
+* Lock-free Multi-Producer Single-Consumer queue.
+* Each local queue flushes events into it, a dedicated logger thread consumes and processes.
+
+### 📌 `GlobalTracker`
+* Maintains a graph of thread ↔ mutex ownership.
+* Detects cycles = **deadlocks** using DFS-based Cycle Detection on a Wait-For Graph, emits special event.
+
+### 📌 `EventQueue`
+* Each thread keeps a thread-local event queue.
+* Periodically flushed into the `MPSCQueue` for central logging.
+
+### 📌 `Logger`
+* Consumes the `MPSCQueue`, serializes events to JSON, sends to TCP client.
+
+### 📌 `Interpose`
+* Overrides `pthread_create`, `pthread_mutex_lock`, `pthread_mutex_unlock`, etc.
+* Captures calls without modifying target source.
+
+## 🔄 Sequence Diagram
 
 ```mermaid
 sequenceDiagram
-    participant App
-    participant Profiler
-    participant pthread
+  participant App as Application
+  participant Interpose
+  participant LocalQueue as EventQueue (thread-local)
+  participant MPSC
+  participant LoggerThread
+  participant Client
 
-    App->>Profiler: pthread_create()
-    Profiler->>pthread: Real pthread_create()
-    pthread-->>Profiler: Thread ID
-    Profiler-->>App: Thread ID
-
-    App->>Profiler: pthread_join(thread)
-    Profiler->>pthread: Real pthread_join(thread)
-    pthread-->>Profiler: Success
-    Profiler-->>App: Success
+  App->>Interpose: pthread_mutex_lock()
+  Interpose->>LocalQueue: push(Event)
+  LocalQueue->>MPSC: flush() (when threshold)
+  MPSC->>LoggerThread: pop()
+  LoggerThread->>Client: send JSON over TCP
 ```
 
-## 🧱 Sequence Flow: Deadlock Example
+## 🚀 How to Compile
 
-```mermaid
-sequenceDiagram
-    participant T1
-    participant T2
-    participant MutexA
-    participant MutexB
-
-    T1->>MutexA: lock()
-    T2->>MutexB: lock()
-    T1->>MutexB: waits (blocked)
-    T2->>MutexA: waits (blocked)
-    note over T1,T2: Circular wait = Deadlock
-```
-
-## 🧪 How to Build and Compile
-
-1. **Create the build directory and compile**:
-
+Generating Threading Profiler library
 ```bash
-cd ThreadingProfiler
-mkdir -p build && cd build
+mkdir build && cd build
 cmake ..
 make
 ```
 
-2. **Result**: This will generate `libThreadingProfiler.so` inside the `build/` directory.
-
-3. **Build the test binary**:
-
+Then to run your multi-threaded binary with profiling:
 ```bash
-g++ -o test_threads ./base_threads.cpp -pthread
+LD_PRELOAD=./build/libThreadingProfiler.so ./your_program
 ```
 
-## 🚀 How to Use the Profiler Library
+## 💡 Future Work
+* ✅ Currently only interposes `pthread_create`, `pthread_join`, `pthread_mutex_lock`, `pthread_mutex_unlock`.
+* Plan to add:
+  * RWLocks, condition variables, barriers
+  * A **GUI (Qt or web)** for real-time graphs, events table, log filtering and CSV generation.
+  * Per-thread and per-mutex **duration heatmaps**, not just event timestamps
+  * Configurable filters for high-volume programs
 
-1. **Preload the shared library**:
+## 📝 License
+MIT License — see [LICENSE](./LICENSE) for details.
 
-```bash
-LD_PRELOAD=../build/libThreadingProfiler.so ./test_threads
+## 🤝 Contributing
+PRs and issues are welcome!
+Please format with `.clang-format` (Google-based, Allman braces).
+
+## ✅ Example Output
+A sample JSON event:
+
+```json
+{
+  "tid": 12345,
+  "timestamp": 17235472545,
+  "type": "THREAD_CREATE"
+}
 ```
-
-2. **Output**: You’ll see logging of thread creation and joining printed to `stdout` or a log file if enabled.
-
-3. **Future Plan**: Logs can be routed to a file and visualized via the React frontend.
-
-## 🖼️ Screenshots
-
-*(Screenshots to be added once the frontend visualization is integrated)*
-
-## 📜 License
-
-[MIT License](./LICENSE)
-
-## 🧩 Additional Suggestions
-
-* Add `mutex` and `condvar` interception support
-* Frontend timeline visualization
-* Thread grouping and duration heatmap
-* Log filtering and export to CSV/JSON
